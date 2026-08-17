@@ -23,6 +23,7 @@ const state = {
   stage: "intro", // intro | identify | quiz | submitting | result | error
   name: "",
   igreja: "",
+  turma: "",
   estado: "",
   municipio: "",
   areaIndex: 0,
@@ -86,6 +87,10 @@ function renderIdentify() {
           <label for="fIgreja">Igreja</label>
           <input type="text" id="fIgreja" placeholder="Nome da sua igreja" value="${state.igreja}">
         </div>
+        <div class="field">
+          <label for="fTurma">Turma / Encontro (se você foi orientado a preencher isso agora, em grupo)</label>
+          <input type="text" id="fTurma" placeholder="Ex: Tocantins 17/08 (deixe em branco se não souber)" value="${state.turma}">
+        </div>
         <div class="field-row">
           <div class="field">
             <label for="fEstado">Estado</label>
@@ -115,6 +120,7 @@ function renderIdentify() {
   document.querySelector("#nextBtn").addEventListener("click", () => {
     state.name = document.querySelector("#fName").value.trim();
     state.igreja = document.querySelector("#fIgreja").value.trim();
+    state.turma = document.querySelector("#fTurma").value.trim();
     state.estado = document.querySelector("#fEstado").value;
     state.municipio = document.querySelector("#fMunicipio").value.trim();
 
@@ -233,7 +239,8 @@ async function submitRadar() {
     p_estado: state.estado,
     p_municipio: state.municipio,
     p_scores: scoresPayload,
-    p_total: total
+    p_total: total,
+    p_turma: state.turma
   });
 
   if (error) {
@@ -252,6 +259,7 @@ async function submitRadar() {
       body: JSON.stringify({
         name: state.name,
         igreja: state.igreja,
+        turma: state.turma || "Avulso",
         estado: state.estado,
         municipio: state.municipio,
         total,
