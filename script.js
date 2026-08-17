@@ -19,6 +19,17 @@ const NOTIFY_URL = "https://kxbyaasoejtrmkiwawzz.supabase.co/functions/v1/notify
 
 const app = document.querySelector("#app");
 
+const municipiosCache = {}; // { UF: [nomes ordenados] }
+
+async function getMunicipios(uf) {
+  if (municipiosCache[uf]) return municipiosCache[uf];
+  const res = await fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${uf}/municipios`);
+  const data = await res.json();
+  const nomes = data.map(m => m.nome).sort((a, b) => a.localeCompare(b, "pt-BR"));
+  municipiosCache[uf] = nomes;
+  return nomes;
+}
+
 const state = {
   stage: "intro", // intro | identify | quiz | submitting | result | error
   name: "",
@@ -106,7 +117,9 @@ function renderIdentify() {
           </div>
           <div class="field">
             <label for="fMunicipio">Município</label>
-            <input type="text" id="fMunicipio" placeholder="Sua cidade" value="${state.municipio}">
+            <select id="fMunicipio" ${state.estado ? "" : "disabled"}>
+              <option value="">${state.estado ? "Carregando..." : "Selecione o estado primeiro"}</option>
+            </select>
           </div>
         </div>
         <div class="btn-row">
@@ -116,6 +129,36 @@ function renderIdentify() {
       </div>
     </div>
   `;
+
+  const municipioSelect = document.querySelector("#fMunicipio");
+
+  async function loadMunicipios(uf, preselect) {
+    municipioSelect.disabled = true;
+    municipioSelect.innerHTML = `<option value="">Carregando...</option>`;
+    try {
+      const nomes = await getMunicipios(uf);
+      municipioSelect.innerHTML = `<option value="">Selecione</option>` +
+        nomes.map(n => `<option value="${n}" ${preselect === n ? "selected" : ""}>${n}</option>`).join("");
+      municipioSelect.disabled = false;
+    } catch (err) {
+      municipioSelect.innerHTML = `<option value="">Erro ao carregar — tente trocar o estado</option>`;
+    }
+  }
+
+  if (state.estado) {
+    loadMunicipios(state.estado, state.municipio);
+  }
+
+  document.querySelector("#fEstado").addEventListener("change", (e) => {
+    const uf = e.target.value;
+    state.municipio = "";
+    if (uf) {
+      loadMunicipios(uf, "");
+    } else {
+      municipioSelect.disabled = true;
+      municipioSelect.innerHTML = `<option value="">Selecione o estado primeiro</option>`;
+    }
+  });
 
   document.querySelector("#backBtn").addEventListener("click", () => {
     state.stage = "intro";
