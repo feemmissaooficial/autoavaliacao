@@ -1,0 +1,116 @@
+.painel-shell {
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 48px 24px 60px;
+  text-align: center;
+}
+
+.painel-setup {
+  max-width: 420px;
+  margin: 80px auto 0;
+  text-align: left;
+}
+
+.painel-setup h1 {
+  font-size: 26px;
+  color: var(--white);
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.painel-header {
+  margin-bottom: 8px;
+}
+
+.painel-eyebrow {
+  display: block;
+  color: var(--gold);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.painel-title {
+  font-size: 40px;
+  color: var(--white);
+}
+
+.painel-stats {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin: 28px 0 40px;
+  flex-wrap: wrap;
+}
+
+.painel-stat {
+  padding: 16px 28px;
+  background: var(--panel-alt);
+  border: 1px solid rgba(198, 155, 92, 0.25);
+  border-radius: 18px;
+}
+
+.painel-stat-value {
+  font-size: 36px;
+  font-weight: 800;
+  color: var(--gold);
+  line-height: 1;
+}
+
+.painel-stat-label {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.painel-chart-wrap {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  aspect-ratio: 1 / 1;
+}
+
+.painel-waiting {
+  margin-top: 60px;
+  color: var(--muted);
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+.painel-live-dot {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 24px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.painel-live-dot::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #3b8a5e;
+  box-shadow: 0 0 0 0 rgba(59, 138, 94, 0.6);
+  animation: pulse 1.6s infinite;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(59, 138, 94, 0.5); }
+  70% { box-shadow: 0 0 0 10px rgba(59, 138, 94, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(59, 138, 94, 0); }
+}
+
+@media (max-width: 540px) {
+  .painel-title { font-size: 28px; }
+  .painel-stat-value { font-size: 28px; }
+}
