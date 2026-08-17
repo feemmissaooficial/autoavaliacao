@@ -1,0 +1,76 @@
+.individual-section {
+  margin-top: 40px;
+  text-align: left;
+}
+
+.individual-section h2 {
+  font-size: 18px;
+  color: var(--white);
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.individual-card {
+  padding: 18px 20px;
+  margin-bottom: 12px;
+  background: var(--panel-alt);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+}
+
+.individual-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.individual-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--white);
+}
+
+.individual-meta {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 3px;
+  line-height: 1.5;
+}
+
+.individual-total {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--gold);
+  white-space: nowrap;
+}
+
+.individual-areas {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+  display: none;
+}
+
+.individual-areas.open {
+  display: block;
+}
+
+.individual-area-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12.5px;
+  padding: 5px 0;
+  color: rgba(234, 221, 197, 0.85);
+}
+
+.individual-area-row strong {
+  color: var(--white);
+}
+
+.individual-toggle-hint {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 4px;
+}
