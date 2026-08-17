@@ -15,6 +15,8 @@ const scoreOptions = [
   { val: 3, label: "3 - sempre" }
 ];
 
+const NOTIFY_URL = "https://kxbyaasoejtrmkiwawzz.supabase.co/functions/v1/notify-telegram";
+
 const app = document.querySelector("#app");
 
 const state = {
@@ -239,6 +241,25 @@ async function submitRadar() {
     state.errorMessage = error.message;
     render();
     return;
+  }
+
+  // Avisa o Nilton no Telegram. Se isso falhar, não trava o fluxo —
+  // o resultado já está salvo no banco de qualquer forma.
+  try {
+    await fetch(NOTIFY_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: state.name,
+        igreja: state.igreja,
+        estado: state.estado,
+        municipio: state.municipio,
+        total,
+        scores: scoresPayload
+      })
+    });
+  } catch (notifyErr) {
+    console.error("Falha ao notificar Telegram:", notifyErr);
   }
 
   state.finalScores = orderedScores;
