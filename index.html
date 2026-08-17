@@ -6,79 +6,12 @@
   <title>Radar Discipular — Fé em Missão</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <main class="page-shell">
-    <section class="intro">
-      <div class="intro-copy">
-        <p class="eyebrow">Autoavaliação</p>
-        <h1>Radar Discipular</h1>
-        <p class="lead">
-          Esta autoavaliação não consiste em um teste psicológico ou algo que defina quem você é,
-          mas como você está hoje em relação às sete áreas da sua vida discipular. Ela será
-          fiel na medida em que pontuar levando em consideração seu comportamento real e não o ideal.
-          Responda tomando como base os <strong>últimos dois anos</strong> da sua caminhada.
-        </p>
-      </div>
-      <img
-        src="https://images.unsplash.com/photo-1507692049790-de58290a4334?auto=format&fit=crop&w=900&q=80"
-        alt="Bíblia aberta em uma mesa"
-        class="intro-image"
-      >
-    </section>
+  <div id="app"></div>
 
-    <section id="turmaBanner" class="turma-banner" hidden>
-      <span class="turma-banner-kicker">Turma</span>
-      <h2 id="turmaBannerName"></h2>
-      <p>Seu resultado será enviado automaticamente para o organizador desta turma, junto com seu nome. Você também verá o seu gráfico aqui, na hora.</p>
-    </section>
-
-    <section id="turmaInvalid" class="turma-banner turma-banner-error" hidden>
-      <p>Este link de turma não foi encontrado. Confira com quem te enviou, ou responda normalmente abaixo (seu resultado não será enviado a ninguém).</p>
-    </section>
-
-    <section class="score-scale" aria-labelledby="scale-title">
-      <h2 id="scale-title">Escala de pontuação</h2>
-      <div class="scale-grid">
-        <div><strong>0</strong><span>Nunca ou nenhuma pessoa</span></div>
-        <div><strong>1</strong><span>Já fiz, mas hoje não ou uma pessoa</span></div>
-        <div><strong>2</strong><span>Faço de vez em quando ou duas pessoas</span></div>
-        <div><strong>3</strong><span>Sempre ou 3 ou mais pessoas</span></div>
-      </div>
-    </section>
-
-    <section class="assessment-layout">
-      <form id="assessmentForm" class="assessment-form">
-        <div class="person-fields">
-          <label for="name">
-            Nome completo
-            <input type="text" id="name" name="name" placeholder="Seu nome completo" required>
-          </label>
-        </div>
-
-        <div id="questionsContainer"></div>
-
-        <button type="submit">Ver meu resultado</button>
-      </form>
-
-      <aside class="result-panel" aria-live="polite">
-        <div id="result" class="result-empty">
-          <span class="result-kicker">Resultado</span>
-          <h2>Aguardando suas respostas</h2>
-          <p>Após enviar, sua pontuação total e a análise por área aparecerão aqui.</p>
-        </div>
-        <div class="chart-wrap">
-          <canvas id="radarChart" aria-label="Gráfico radar das respostas" role="img"></canvas>
-        </div>
-        <div id="detailBreakdown" class="detail-breakdown"></div>
-        <button type="button" id="downloadPdf" class="pdf-button" hidden>Baixar avaliação em PDF</button>
-      </aside>
-    </section>
-  </main>
-
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="data.js"></script>
   <script src="supabase-client.js"></script>
