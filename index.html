@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Autoavaliação Evangelização Discipuladora</title>
+  <title>Radar Discipular — Fé em Missão</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -14,11 +14,12 @@
     <section class="intro">
       <div class="intro-copy">
         <p class="eyebrow">Autoavaliação</p>
-        <h1>Autoavaliação Evangelização Discipuladora</h1>
+        <h1>Radar Discipular</h1>
         <p class="lead">
           Esta autoavaliação não consiste em um teste psicológico ou algo que defina quem você é,
-          mas como você está hoje em relação a Evangelização Discipuladora. A autoavaliação será
+          mas como você está hoje em relação às sete áreas da sua vida discipular. Ela será
           fiel na medida em que pontuar levando em consideração seu comportamento real e não o ideal.
+          Responda tomando como base os <strong>últimos dois anos</strong> da sua caminhada.
         </p>
       </div>
       <img
@@ -26,6 +27,16 @@
         alt="Bíblia aberta em uma mesa"
         class="intro-image"
       >
+    </section>
+
+    <section id="turmaBanner" class="turma-banner" hidden>
+      <span class="turma-banner-kicker">Turma</span>
+      <h2 id="turmaBannerName"></h2>
+      <p>Seu resultado será enviado automaticamente para o organizador desta turma, junto com seu nome. Você também verá o seu gráfico aqui, na hora.</p>
+    </section>
+
+    <section id="turmaInvalid" class="turma-banner turma-banner-error" hidden>
+      <p>Este link de turma não foi encontrado. Confira com quem te enviou, ou responda normalmente abaixo (seu resultado não será enviado a ninguém).</p>
     </section>
 
     <section class="score-scale" aria-labelledby="scale-title">
@@ -47,59 +58,7 @@
           </label>
         </div>
 
-        <fieldset class="questions">
-          <legend>Responda às cinco perguntas</legend>
-
-          <div class="question">
-            <p>1. Estou empenhado em fazer discípulos de Cristo através de meus relacionamentos.</p>
-            <div class="options" role="radiogroup" aria-label="Pergunta 1">
-              <label><input type="radio" name="q1" value="0" required> <span>0<br>Nunca</span></label>
-              <label><input type="radio" name="q1" value="1"> <span>1<br>Já fiz, mas hoje não</span></label>
-              <label><input type="radio" name="q1" value="2"> <span>2<br>Faço de vez em quando</span></label>
-              <label><input type="radio" name="q1" value="3"> <span>3<br>Sempre</span></label>
-            </div>
-          </div>
-
-          <div class="question">
-            <p>2. Tenho orado diariamente por 5 pessoas de meu círculo de relacionamento para que Deus me dê oportunidade e sabedoria para compartilhar o evangelho de Cristo.</p>
-            <div class="options" role="radiogroup" aria-label="Pergunta 2">
-              <label><input type="radio" name="q2" value="0" required> <span>0<br>Nunca</span></label>
-              <label><input type="radio" name="q2" value="1"> <span>1<br>Já fiz, mas hoje não</span></label>
-              <label><input type="radio" name="q2" value="2"> <span>2<br>Faço de vez em quando</span></label>
-              <label><input type="radio" name="q2" value="3"> <span>3<br>Sempre</span></label>
-            </div>
-          </div>
-
-          <div class="question">
-            <p>3. Marque de acordo com o número de pessoas que você levou aos pés de Cristo nos últimos dois anos.</p>
-            <div class="options" role="radiogroup" aria-label="Pergunta 3">
-              <label><input type="radio" name="q3" value="0" required> <span>0<br>Nenhuma</span></label>
-              <label><input type="radio" name="q3" value="1"> <span>1<br>Uma pessoa</span></label>
-              <label><input type="radio" name="q3" value="2"> <span>2<br>Duas pessoas</span></label>
-              <label><input type="radio" name="q3" value="3"> <span>3<br>3 ou mais pessoas</span></label>
-            </div>
-          </div>
-
-          <div class="question">
-            <p>4. Marque de acordo com o número de pessoas crentes que você acompanha sistematicamente em discipulado.</p>
-            <div class="options" role="radiogroup" aria-label="Pergunta 4">
-              <label><input type="radio" name="q4" value="0" required> <span>0<br>Nenhuma</span></label>
-              <label><input type="radio" name="q4" value="1"> <span>1<br>Uma pessoa</span></label>
-              <label><input type="radio" name="q4" value="2"> <span>2<br>Duas pessoas</span></label>
-              <label><input type="radio" name="q4" value="3"> <span>3<br>3 ou mais pessoas</span></label>
-            </div>
-          </div>
-
-          <div class="question">
-            <p>5. Compartilho, com frequência, o evangelho da salvação aos meus parentes, amigos, vizinhos e colegas.</p>
-            <div class="options" role="radiogroup" aria-label="Pergunta 5">
-              <label><input type="radio" name="q5" value="0" required> <span>0<br>Nunca</span></label>
-              <label><input type="radio" name="q5" value="1"> <span>1<br>Já fiz, mas hoje não</span></label>
-              <label><input type="radio" name="q5" value="2"> <span>2<br>Faço de vez em quando</span></label>
-              <label><input type="radio" name="q5" value="3"> <span>3<br>Sempre</span></label>
-            </div>
-          </div>
-        </fieldset>
+        <div id="questionsContainer"></div>
 
         <button type="submit">Ver meu resultado</button>
       </form>
@@ -108,17 +67,21 @@
         <div id="result" class="result-empty">
           <span class="result-kicker">Resultado</span>
           <h2>Aguardando suas respostas</h2>
-          <p>Após enviar, sua pontuação total e a análise aparecerão aqui.</p>
+          <p>Após enviar, sua pontuação total e a análise por área aparecerão aqui.</p>
         </div>
         <div class="chart-wrap">
           <canvas id="radarChart" aria-label="Gráfico radar das respostas" role="img"></canvas>
         </div>
+        <div id="detailBreakdown" class="detail-breakdown"></div>
         <button type="button" id="downloadPdf" class="pdf-button" hidden>Baixar avaliação em PDF</button>
       </aside>
     </section>
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="data.js"></script>
+  <script src="supabase-client.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

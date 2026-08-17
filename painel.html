@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel da turma — Radar Discipular</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="page-shell page-shell-narrow">
+    <section class="intro intro-simple">
+      <div class="intro-copy">
+        <p class="eyebrow">Painel</p>
+        <h1 id="groupName">Carregando...</h1>
+        <p class="lead" id="groupSummary"></p>
+      </div>
+    </section>
+
+    <section class="assessment-layout" id="panelContent" hidden>
+      <div class="assessment-form card-block">
+        <h2>Média por área</h2>
+        <div class="chart-wrap">
+          <canvas id="radarChart"></canvas>
+        </div>
+        <div id="detailBreakdown" class="detail-breakdown"></div>
+      </div>
+
+      <aside class="result-panel">
+        <h2>Respostas por pessoa</h2>
+        <div id="participantList" class="participant-list"></div>
+      </aside>
+    </section>
+
+    <section class="card-block" id="emptyState" hidden>
+      <p>Ninguém respondeu ainda. Envie o link da turma para o grupo preencher.</p>
+    </section>
+
+    <section class="card-block" id="notFoundState" hidden>
+      <p>Painel não encontrado. Confira o link.</p>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="data.js"></script>
+  <script src="supabase-client.js"></script>
+  <script src="painel.js"></script>
+</body>
+</html>

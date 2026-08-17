@@ -29,6 +29,10 @@ body {
   padding: 32px 0 48px;
 }
 
+.page-shell-narrow {
+  width: min(720px, calc(100% - 32px));
+}
+
 .intro {
   display: grid;
   grid-template-columns: minmax(0, 1.05fr) minmax(260px, 0.95fr);
@@ -37,11 +41,20 @@ body {
   min-height: 300px;
 }
 
+.intro-simple {
+  grid-template-columns: 1fr;
+  min-height: 0;
+}
+
 .intro-copy {
   display: flex;
   flex-direction: column;
   justify-content: center;
   padding: 44px 0;
+}
+
+.intro-simple .intro-copy {
+  padding: 12px 0 0;
 }
 
 .eyebrow {
@@ -65,6 +78,10 @@ h1 {
   font-size: 4.35rem;
   line-height: 1.02;
   letter-spacing: 0;
+}
+
+.intro-simple h1 {
+  font-size: 2.6rem;
 }
 
 .lead {
@@ -126,6 +143,39 @@ h1 {
   line-height: 1.45;
 }
 
+.turma-banner {
+  margin-top: 24px;
+  padding: 20px 24px;
+  border: 1px solid var(--gold);
+  border-radius: 8px;
+  background: #fbf3dd;
+}
+
+.turma-banner-kicker {
+  display: inline-flex;
+  color: var(--coral);
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.turma-banner h2 {
+  margin: 6px 0 8px;
+  font-size: 1.4rem;
+}
+
+.turma-banner p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.turma-banner-error {
+  border-color: var(--coral);
+  background: #fbe9e6;
+}
+
 .assessment-layout {
   display: grid;
   grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
@@ -134,12 +184,17 @@ h1 {
 }
 
 .assessment-form,
-.result-panel {
+.result-panel,
+.card-block {
   padding: 24px;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--white);
   box-shadow: var(--shadow);
+}
+
+.card-block {
+  margin-top: 24px;
 }
 
 .person-fields {
@@ -174,6 +229,13 @@ button:focus-visible {
   margin: 24px 0 0;
   padding: 0;
   border: 0;
+}
+
+.questions legend {
+  padding: 8px 0;
+  color: var(--green-dark);
+  border-bottom: 2px solid var(--green);
+  width: 100%;
 }
 
 .question {
@@ -234,6 +296,11 @@ button:hover {
   background: var(--green-dark);
 }
 
+button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
 .pdf-button {
   margin-top: 18px;
   background: var(--coral);
@@ -271,6 +338,12 @@ button:hover {
   line-height: 1;
 }
 
+.score-max {
+  font-size: 1.4rem;
+  color: var(--muted);
+  font-weight: 700;
+}
+
 .chart-wrap {
   min-height: 340px;
   margin-top: 22px;
@@ -280,6 +353,111 @@ button:hover {
 canvas {
   width: 100% !important;
   height: 100% !important;
+}
+
+.detail-breakdown {
+  margin-top: 22px;
+}
+
+.breakdown-item {
+  padding: 14px 0;
+  border-top: 1px solid var(--line);
+}
+
+.breakdown-head {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+}
+
+.breakdown-item p {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+.links-block {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.link-item {
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #f7f4ef;
+}
+
+.link-item-admin {
+  border-color: var(--gold);
+  background: #fbf3dd;
+}
+
+.link-label {
+  display: block;
+  font-weight: 800;
+  color: var(--green-dark);
+  margin-bottom: 6px;
+}
+
+.link-help {
+  margin: 0 0 12px;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.link-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.link-box span {
+  flex: 1;
+  font-size: 0.86rem;
+  word-break: break-all;
+  color: var(--ink);
+}
+
+.copy-button {
+  width: auto;
+  min-height: 0;
+  margin: 0;
+  padding: 8px 14px;
+  font-size: 0.85rem;
+}
+
+.link-reset {
+  background: none;
+  color: var(--muted);
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+.link-reset:hover {
+  background: none;
+  color: var(--ink);
+}
+
+.participant-list {
+  margin-top: 8px;
+}
+
+.participant-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.participant-row strong {
+  color: var(--green);
 }
 
 @media (max-width: 860px) {
@@ -326,7 +504,8 @@ canvas {
   }
 
   .assessment-form,
-  .result-panel {
+  .result-panel,
+  .card-block {
     padding: 18px;
   }
 }
@@ -353,6 +532,7 @@ canvas {
   .intro-image,
   .score-scale,
   .assessment-form,
+  .turma-banner,
   .pdf-button {
     display: none !important;
   }
