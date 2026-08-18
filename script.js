@@ -32,10 +32,12 @@ async function getMunicipios(uf) {
 
 const state = {
   stage: "intro", // intro | identify | quiz | submitting | result | error
-  name: "",
   igreja: "",
   pastorIgreja: "",
-  turma: "",
+  evento: "",
+  dataEvento: "",
+  email: "",
+  whatsapp: "",
   estado: "",
   municipio: "",
   areaIndex: 0,
@@ -89,12 +91,9 @@ function renderIdentify() {
       <div class="hero">
         <span class="eyebrow">Antes de começar</span>
         <h1 style="font-size:24px">Quem está respondendo?</h1>
+        <p style="margin-top:12px;font-size:13px;color:rgba(234,221,197,0.6);line-height:1.6">Esta autoavaliação é anônima — não pedimos seu nome. Pedimos apenas um contato, para que possamos agradecer sua participação ao final.</p>
       </div>
       <div class="field-group">
-        <div class="field">
-          <label for="fName">Nome completo</label>
-          <input type="text" id="fName" placeholder="Seu nome completo" value="${state.name}">
-        </div>
         <div class="field">
           <label for="fIgreja">Igreja</label>
           <input type="text" id="fIgreja" placeholder="Nome da sua igreja" value="${state.igreja}">
@@ -103,9 +102,23 @@ function renderIdentify() {
           <label for="fPastor">Pastor da igreja</label>
           <input type="text" id="fPastor" placeholder="Nome do pastor da sua igreja" value="${state.pastorIgreja}">
         </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="fEvento">Evento (se orientado, em grupo)</label>
+            <input type="text" id="fEvento" placeholder="Ex: Convenção Tocantins" value="${state.evento}">
+          </div>
+          <div class="field">
+            <label for="fDataEvento">Data</label>
+            <input type="text" id="fDataEvento" placeholder="Ex: 17/08" value="${state.dataEvento}">
+          </div>
+        </div>
         <div class="field">
-          <label for="fTurma">Turma (se você foi orientado a preencher isso agora, em grupo)</label>
-          <input type="text" id="fTurma" placeholder="Ex: Tocantins 17/08 (deixe em branco se não souber)" value="${state.turma}">
+          <label for="fEmail">E-mail</label>
+          <input type="email" id="fEmail" placeholder="seu@email.com" value="${state.email}">
+        </div>
+        <div class="field">
+          <label for="fWhatsapp">WhatsApp</label>
+          <input type="text" id="fWhatsapp" placeholder="(00) 00000-0000" value="${state.whatsapp}">
         </div>
         <div class="field-row">
           <div class="field">
@@ -166,15 +179,17 @@ function renderIdentify() {
   });
 
   document.querySelector("#nextBtn").addEventListener("click", () => {
-    state.name = document.querySelector("#fName").value.trim();
     state.igreja = document.querySelector("#fIgreja").value.trim();
     state.pastorIgreja = document.querySelector("#fPastor").value.trim();
-    state.turma = document.querySelector("#fTurma").value.trim();
+    state.evento = document.querySelector("#fEvento").value.trim();
+    state.dataEvento = document.querySelector("#fDataEvento").value.trim();
+    state.email = document.querySelector("#fEmail").value.trim();
+    state.whatsapp = document.querySelector("#fWhatsapp").value.trim();
     state.estado = document.querySelector("#fEstado").value;
     state.municipio = document.querySelector("#fMunicipio").value.trim();
 
-    if (!state.name || !state.igreja || !state.estado || !state.municipio) {
-      alert("Preencha nome, igreja, estado e município para continuar.");
+    if (!state.igreja || !state.estado || !state.municipio || !state.email || !state.whatsapp) {
+      alert("Preencha igreja, e-mail, WhatsApp, estado e município para continuar.");
       return;
     }
 
@@ -282,15 +297,18 @@ async function submitRadar() {
   });
   const total = orderedScores.reduce((a, b) => a + b, 0);
 
+  const turmaCombinada = [state.evento, state.dataEvento].filter(Boolean).join(" - ");
+
   const { error } = await supabaseClient.rpc("submit_radar_response", {
-    p_name: state.name,
     p_igreja: state.igreja,
+    p_pastor_igreja: state.pastorIgreja,
     p_estado: state.estado,
     p_municipio: state.municipio,
     p_scores: scoresPayload,
     p_total: total,
-    p_turma: state.turma,
-    p_pastor_igreja: state.pastorIgreja
+    p_turma: turmaCombinada,
+    p_email: state.email,
+    p_whatsapp: state.whatsapp
   });
 
   if (error) {
@@ -307,10 +325,13 @@ async function submitRadar() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        name: state.name,
         igreja: state.igreja,
         pastorIgreja: state.pastorIgreja,
-        turma: state.turma || "Avulso",
+        evento: state.evento,
+        dataEvento: state.dataEvento,
+        turma: turmaCombinada || "Avulso",
+        email: state.email,
+        whatsapp: state.whatsapp,
         estado: state.estado,
         municipio: state.municipio,
         total,
@@ -385,7 +406,7 @@ function renderResult() {
     <div class="shell">
       <div class="result-header">
         <h1>Seu Radar</h1>
-        <p class="subtitle">${state.name} · ${state.igreja}</p>
+        <p class="subtitle">${state.igreja}</p>
         <div class="score-badge">
           <span class="score-badge-label">Pontuação Total</span>
           <span class="score-badge-value">${state.totalScore}</span>
