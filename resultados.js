@@ -119,8 +119,7 @@ function renderIndividuals(rows) {
         <div class="individual-card">
           <div class="individual-head" data-toggle="${i}">
             <div>
-              <div class="individual-name">${r.igreja}</div>
-              <div class="individual-meta">${r.pastor_igreja ? "Pastor: " + r.pastor_igreja + "<br>" : ""}${r.municipio} - ${r.estado}<br>${r.email || "sem e-mail"} · ${r.whatsapp || "sem WhatsApp"}</div>
+              <div class="individual-name">${r.local || "Local não informado"}</div>
               <div class="individual-toggle-hint">Toque para ver detalhamento por área</div>
             </div>
             <div class="individual-total">${r.total_score}/105</div>

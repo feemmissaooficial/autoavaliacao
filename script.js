@@ -1,13 +1,3 @@
-const estadosBR = [
-  ["AC", "Acre"], ["AL", "Alagoas"], ["AP", "Amapá"], ["AM", "Amazonas"],
-  ["BA", "Bahia"], ["CE", "Ceará"], ["DF", "Distrito Federal"], ["ES", "Espírito Santo"],
-  ["GO", "Goiás"], ["MA", "Maranhão"], ["MT", "Mato Grosso"], ["MS", "Mato Grosso do Sul"],
-  ["MG", "Minas Gerais"], ["PA", "Pará"], ["PB", "Paraíba"], ["PR", "Paraná"],
-  ["PE", "Pernambuco"], ["PI", "Piauí"], ["RJ", "Rio de Janeiro"], ["RN", "Rio Grande do Norte"],
-  ["RS", "Rio Grande do Sul"], ["RO", "Rondônia"], ["RR", "Roraima"], ["SC", "Santa Catarina"],
-  ["SP", "São Paulo"], ["SE", "Sergipe"], ["TO", "Tocantins"]
-];
-
 const scoreOptions = [
   { val: 0, label: "0 - nunca fiz" },
   { val: 1, label: "1 - já fiz, mas hoje não" },
@@ -19,27 +9,11 @@ const NOTIFY_URL = "https://kxbyaasoejtrmkiwawzz.supabase.co/functions/v1/notify
 
 const app = document.querySelector("#app");
 
-const municipiosCache = {}; // { UF: [nomes ordenados] }
-
-async function getMunicipios(uf) {
-  if (municipiosCache[uf]) return municipiosCache[uf];
-  const res = await fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${uf}/municipios`);
-  const data = await res.json();
-  const nomes = data.map(m => m.nome).sort((a, b) => a.localeCompare(b, "pt-BR"));
-  municipiosCache[uf] = nomes;
-  return nomes;
-}
-
 const state = {
   stage: "intro", // intro | identify | quiz | submitting | result | error
-  igreja: "",
-  pastorIgreja: "",
   evento: "",
   dataEvento: "",
-  email: "",
-  whatsapp: "",
-  estado: "",
-  municipio: "",
+  local: "",
   areaIndex: 0,
   answers: {}, // { areaId: [scores] }
   finalScores: [],
@@ -90,18 +64,10 @@ function renderIdentify() {
     <div class="shell">
       <div class="hero">
         <span class="eyebrow">Antes de começar</span>
-        <h1 style="font-size:24px">Quem está respondendo?</h1>
-        <p style="margin-top:12px;font-size:13px;color:rgba(234,221,197,0.6);line-height:1.6">Esta autoavaliação é anônima — não pedimos seu nome. Pedimos apenas um contato, para que possamos agradecer sua participação ao final.</p>
+        <h1 style="font-size:24px">Sobre este momento</h1>
+        <p style="margin-top:12px;font-size:13px;color:rgba(234,221,197,0.6);line-height:1.6">Esta autoavaliação é totalmente anônima.</p>
       </div>
       <div class="field-group">
-        <div class="field">
-          <label for="fIgreja">Igreja</label>
-          <input type="text" id="fIgreja" placeholder="Nome da sua igreja" value="${state.igreja}">
-        </div>
-        <div class="field">
-          <label for="fPastor">Pastor da igreja</label>
-          <input type="text" id="fPastor" placeholder="Nome do pastor da sua igreja" value="${state.pastorIgreja}">
-        </div>
         <div class="field-row">
           <div class="field">
             <label for="fEvento">Evento (se orientado, em grupo)</label>
@@ -113,27 +79,8 @@ function renderIdentify() {
           </div>
         </div>
         <div class="field">
-          <label for="fEmail">E-mail</label>
-          <input type="email" id="fEmail" placeholder="seu@email.com" value="${state.email}">
-        </div>
-        <div class="field">
-          <label for="fWhatsapp">WhatsApp</label>
-          <input type="text" id="fWhatsapp" placeholder="(00) 00000-0000" value="${state.whatsapp}">
-        </div>
-        <div class="field-row">
-          <div class="field">
-            <label for="fEstado">Estado</label>
-            <select id="fEstado">
-              <option value="">Selecione</option>
-              ${estadosBR.map(([sigla, nome]) => `<option value="${sigla}" ${state.estado === sigla ? "selected" : ""}>${nome}</option>`).join("")}
-            </select>
-          </div>
-          <div class="field">
-            <label for="fMunicipio">Município</label>
-            <select id="fMunicipio" ${state.estado ? "" : "disabled"}>
-              <option value="">${state.estado ? "Carregando..." : "Selecione o estado primeiro"}</option>
-            </select>
-          </div>
+          <label for="fLocal">Local</label>
+          <input type="text" id="fLocal" placeholder="Descreva onde você está (cidade, igreja, etc.)" value="${state.local}">
         </div>
         <div class="btn-row">
           <button class="btn btn-secondary" id="backBtn">Voltar</button>
@@ -143,53 +90,18 @@ function renderIdentify() {
     </div>
   `;
 
-  const municipioSelect = document.querySelector("#fMunicipio");
-
-  async function loadMunicipios(uf, preselect) {
-    municipioSelect.disabled = true;
-    municipioSelect.innerHTML = `<option value="">Carregando...</option>`;
-    try {
-      const nomes = await getMunicipios(uf);
-      municipioSelect.innerHTML = `<option value="">Selecione</option>` +
-        nomes.map(n => `<option value="${n}" ${preselect === n ? "selected" : ""}>${n}</option>`).join("");
-      municipioSelect.disabled = false;
-    } catch (err) {
-      municipioSelect.innerHTML = `<option value="">Erro ao carregar — tente trocar o estado</option>`;
-    }
-  }
-
-  if (state.estado) {
-    loadMunicipios(state.estado, state.municipio);
-  }
-
-  document.querySelector("#fEstado").addEventListener("change", (e) => {
-    const uf = e.target.value;
-    state.municipio = "";
-    if (uf) {
-      loadMunicipios(uf, "");
-    } else {
-      municipioSelect.disabled = true;
-      municipioSelect.innerHTML = `<option value="">Selecione o estado primeiro</option>`;
-    }
-  });
-
   document.querySelector("#backBtn").addEventListener("click", () => {
     state.stage = "intro";
     render();
   });
 
   document.querySelector("#nextBtn").addEventListener("click", () => {
-    state.igreja = document.querySelector("#fIgreja").value.trim();
-    state.pastorIgreja = document.querySelector("#fPastor").value.trim();
     state.evento = document.querySelector("#fEvento").value.trim();
     state.dataEvento = document.querySelector("#fDataEvento").value.trim();
-    state.email = document.querySelector("#fEmail").value.trim();
-    state.whatsapp = document.querySelector("#fWhatsapp").value.trim();
-    state.estado = document.querySelector("#fEstado").value;
-    state.municipio = document.querySelector("#fMunicipio").value.trim();
+    state.local = document.querySelector("#fLocal").value.trim();
 
-    if (!state.igreja || !state.estado || !state.municipio || !state.email || !state.whatsapp) {
-      alert("Preencha igreja, e-mail, WhatsApp, estado e município para continuar.");
+    if (!state.local) {
+      alert("Descreva o local para continuar.");
       return;
     }
 
@@ -300,15 +212,11 @@ async function submitRadar() {
   const turmaCombinada = [state.evento, state.dataEvento].filter(Boolean).join(" - ");
 
   const { error } = await supabaseClient.rpc("submit_radar_response", {
-    p_igreja: state.igreja,
-    p_pastor_igreja: state.pastorIgreja,
-    p_estado: state.estado,
-    p_municipio: state.municipio,
     p_scores: scoresPayload,
     p_total: total,
-    p_turma: turmaCombinada,
-    p_email: state.email,
-    p_whatsapp: state.whatsapp
+    p_evento: state.evento,
+    p_data_evento: state.dataEvento,
+    p_local: state.local
   });
 
   if (error) {
@@ -325,15 +233,10 @@ async function submitRadar() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        igreja: state.igreja,
-        pastorIgreja: state.pastorIgreja,
         evento: state.evento,
         dataEvento: state.dataEvento,
         turma: turmaCombinada || "Avulso",
-        email: state.email,
-        whatsapp: state.whatsapp,
-        estado: state.estado,
-        municipio: state.municipio,
+        local: state.local,
         total,
         scores: scoresPayload
       })
@@ -406,7 +309,7 @@ function renderResult() {
     <div class="shell">
       <div class="result-header">
         <h1>Seu Radar</h1>
-        <p class="subtitle">${state.igreja}</p>
+        <p class="subtitle">${state.local}</p>
         <div class="score-badge">
           <span class="score-badge-label">Pontuação Total</span>
           <span class="score-badge-value">${state.totalScore}</span>
