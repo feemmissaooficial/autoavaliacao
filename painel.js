@@ -1,38 +1,63 @@
 const app = document.querySelector("#app");
 let pollTimer = null;
 
-function getTurmaFromUrl() {
+function getTurmasFromUrl() {
   const params = new URLSearchParams(window.location.search);
-  return params.get("turma") || "";
+  const raw = params.get("turmas");
+  if (!raw) return null;
+  return raw.split("|||").filter(Boolean);
 }
 
-function renderSetup() {
+function setTurmasInUrl(turmas) {
+  window.location.search = `?turmas=${encodeURIComponent(turmas.join("|||"))}`;
+}
+
+async function renderSetup() {
   app.innerHTML = `
     <div class="painel-shell">
       <div class="painel-setup">
         <h1>Painel ao vivo</h1>
-        <div class="field">
-          <label for="fTurmaPainel">Nome da turma</label>
-          <input type="text" id="fTurmaPainel" placeholder="Ex: Convenção Tocantins 17/08">
-        </div>
+        <p style="color:var(--muted);font-size:13px;margin-bottom:16px;line-height:1.6">
+          Marque todas as respostas que forem do mesmo evento — mesmo que o nome tenha sido digitado de formas diferentes.
+        </p>
+        <div id="turmasList" style="margin-bottom:20px">Carregando lista de eventos...</div>
         <button class="btn btn-primary" id="verPainelBtn">Ver painel ao vivo →</button>
       </div>
     </div>
   `;
 
+  const { data } = await supabaseClient.rpc("list_radar_turmas");
+  const list = document.querySelector("#turmasList");
+
+  if (!data || data.length === 0) {
+    list.innerHTML = `<p style="color:var(--muted);font-size:13px">Nenhuma resposta registrada ainda.</p>`;
+    return;
+  }
+
+  list.innerHTML = data.map((t, i) => `
+    <label style="display:flex;align-items:center;gap:10px;padding:12px;margin-bottom:8px;background:var(--panel-alt);border:1px solid var(--border);border-radius:12px;cursor:pointer">
+      <input type="checkbox" class="turma-check" value="${encodeURIComponent(t.turma)}" style="width:18px;height:18px">
+      <span style="flex:1;font-size:14px;color:var(--white)">${t.turma}</span>
+      <span style="font-size:12px;color:var(--gold);font-weight:700">${t.participantes} resp.</span>
+    </label>
+  `).join("");
+
   document.querySelector("#verPainelBtn").addEventListener("click", () => {
-    const turma = document.querySelector("#fTurmaPainel").value.trim();
-    if (!turma) return;
-    window.location.search = `?turma=${encodeURIComponent(turma)}`;
+    const checked = Array.from(document.querySelectorAll(".turma-check:checked")).map(el => decodeURIComponent(el.value));
+    if (checked.length === 0) {
+      alert("Marque pelo menos um evento.");
+      return;
+    }
+    setTurmasInUrl(checked);
   });
 }
 
-function renderPainelShell(turma) {
+function renderPainelShell(turmas) {
   app.innerHTML = `
     <div class="painel-shell">
       <div class="painel-header">
         <span class="painel-eyebrow">Painel ao vivo</span>
-        <h1 class="painel-title">${turma}</h1>
+        <h1 class="painel-title" style="font-size:24px">${turmas.join(" + ")}</h1>
       </div>
       <div id="painelBody"></div>
       <div class="painel-live-dot">Atualizando automaticamente</div>
@@ -42,7 +67,7 @@ function renderPainelShell(turma) {
 
 function renderBodyWaiting() {
   document.querySelector("#painelBody").innerHTML = `
-    <div class="painel-waiting">Aguardando as primeiras respostas da turma...</div>
+    <div class="painel-waiting">Aguardando as primeiras respostas...</div>
   `;
 }
 
@@ -108,8 +133,8 @@ function renderBodyData(summary) {
   `;
 }
 
-async function refresh(turma) {
-  const { data, error } = await supabaseClient.rpc("get_radar_turma_summary", { p_turma: turma });
+async function refresh(turmas) {
+  const { data, error } = await supabaseClient.rpc("get_radar_turmas_summary", { p_turmas: turmas });
   if (error || !data || data.length === 0) return;
 
   const summary = data[0];
@@ -121,18 +146,18 @@ async function refresh(turma) {
 }
 
 function init() {
-  const turma = getTurmaFromUrl();
-  if (!turma) {
+  const turmas = getTurmasFromUrl();
+  if (!turmas) {
     renderSetup();
     return;
   }
 
-  renderPainelShell(turma);
+  renderPainelShell(turmas);
   renderBodyWaiting();
-  refresh(turma);
+  refresh(turmas);
 
   if (pollTimer) clearInterval(pollTimer);
-  pollTimer = setInterval(() => refresh(turma), 5000);
+  pollTimer = setInterval(() => refresh(turmas), 5000);
 }
 
 init();
