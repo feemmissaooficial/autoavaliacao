@@ -11,8 +11,8 @@ const app = document.querySelector("#app");
 
 const state = {
   stage: "intro", // intro | identify | quiz | submitting | result | error
-  evento: "",
-  dataEvento: "",
+  senha: "",
+  eventoNome: "",
   local: "",
   areaIndex: 0,
   answers: {}, // { areaId: [scores] }
@@ -68,15 +68,10 @@ function renderIdentify() {
         <p style="margin-top:12px;font-size:13px;color:rgba(234,221,197,0.6);line-height:1.6">Esta autoavaliação é totalmente anônima.</p>
       </div>
       <div class="field-group">
-        <div class="field-row">
-          <div class="field">
-            <label for="fEvento">Evento (se orientado, em grupo)</label>
-            <input type="text" id="fEvento" placeholder="Ex: Convenção Tocantins" value="${state.evento}">
-          </div>
-          <div class="field">
-            <label for="fDataEvento">Data</label>
-            <input type="text" id="fDataEvento" placeholder="Ex: 17/08" value="${state.dataEvento}">
-          </div>
+        <div class="field">
+          <label for="fSenha">Senha do evento</label>
+          <input type="text" id="fSenha" placeholder="Peça a senha para quem está te orientando" value="${state.senha}">
+          <div id="senhaStatus" style="margin-top:8px;font-size:12px"></div>
         </div>
         <div class="field">
           <label for="fLocal">Local</label>
@@ -95,16 +90,34 @@ function renderIdentify() {
     render();
   });
 
-  document.querySelector("#nextBtn").addEventListener("click", () => {
-    state.evento = document.querySelector("#fEvento").value.trim();
-    state.dataEvento = document.querySelector("#fDataEvento").value.trim();
-    state.local = document.querySelector("#fLocal").value.trim();
+  document.querySelector("#nextBtn").addEventListener("click", async () => {
+    const senhaInput = document.querySelector("#fSenha").value.trim();
+    const local = document.querySelector("#fLocal").value.trim();
+    const statusEl = document.querySelector("#senhaStatus");
+    const nextBtn = document.querySelector("#nextBtn");
 
-    if (!state.local) {
-      alert("Descreva o local para continuar.");
+    if (!senhaInput || !local) {
+      alert("Preencha a senha do evento e o local para continuar.");
       return;
     }
 
+    nextBtn.disabled = true;
+    nextBtn.textContent = "Verificando...";
+    statusEl.innerHTML = "";
+
+    const { data, error } = await supabaseClient.rpc("validar_evento_senha", { p_senha: senhaInput });
+
+    nextBtn.disabled = false;
+    nextBtn.textContent = "Continuar →";
+
+    if (error || !data || data.length === 0) {
+      statusEl.innerHTML = `<span style="color:#d16b5a">Senha inválida. Confira com quem te orientou.</span>`;
+      return;
+    }
+
+    state.senha = senhaInput;
+    state.eventoNome = data[0].nome;
+    state.local = local;
     state.stage = "quiz";
     state.areaIndex = 0;
     render();
@@ -209,19 +222,16 @@ async function submitRadar() {
   });
   const total = orderedScores.reduce((a, b) => a + b, 0);
 
-  const turmaCombinada = [state.evento, state.dataEvento].filter(Boolean).join(" - ");
-
-  const { error } = await supabaseClient.rpc("submit_radar_response", {
+  const { data, error } = await supabaseClient.rpc("submit_radar_response", {
     p_scores: scoresPayload,
     p_total: total,
-    p_evento: state.evento,
-    p_data_evento: state.dataEvento,
+    p_senha: state.senha,
     p_local: state.local
   });
 
-  if (error) {
+  if (error || !data || data.length === 0 || !data[0].ok) {
     state.stage = "error";
-    state.errorMessage = error.message;
+    state.errorMessage = error ? error.message : "Senha do evento não encontrada. Tente novamente.";
     render();
     return;
   }
@@ -233,9 +243,8 @@ async function submitRadar() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        evento: state.evento,
-        dataEvento: state.dataEvento,
-        turma: turmaCombinada || "Avulso",
+        evento: state.eventoNome,
+        turma: state.eventoNome,
         local: state.local,
         total,
         scores: scoresPayload
@@ -309,7 +318,7 @@ function renderResult() {
     <div class="shell">
       <div class="result-header">
         <h1>Seu Radar</h1>
-        <p class="subtitle">${state.local}</p>
+        <p class="subtitle">${state.eventoNome} · ${state.local}</p>
         <div class="score-badge">
           <span class="score-badge-label">Pontuação Total</span>
           <span class="score-badge-value">${state.totalScore}</span>

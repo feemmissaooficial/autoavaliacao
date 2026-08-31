@@ -26,18 +26,18 @@ async function renderSetup() {
     </div>
   `;
 
-  const { data } = await supabaseClient.rpc("list_radar_turmas");
+  const { data } = await supabaseClient.rpc("list_radar_eventos");
   const list = document.querySelector("#turmasList");
 
   if (!data || data.length === 0) {
-    list.innerHTML = `<p style="color:var(--muted);font-size:13px">Nenhuma resposta registrada ainda.</p>`;
+    list.innerHTML = `<p style="color:var(--muted);font-size:13px">Nenhum evento criado ainda. Crie um em criar-evento.html.</p>`;
     return;
   }
 
   list.innerHTML = data.map((t) => `
     <label style="display:flex;align-items:center;gap:10px;padding:12px;margin-bottom:8px;background:var(--panel-alt);border:1px solid var(--border);border-radius:12px;cursor:pointer">
-      <input type="checkbox" class="turma-check" value="${encodeURIComponent(t.turma)}" style="width:18px;height:18px">
-      <span style="flex:1;font-size:14px;color:var(--white)">${t.turma}</span>
+      <input type="checkbox" class="turma-check" value="${encodeURIComponent(t.nome)}" style="width:18px;height:18px">
+      <span style="flex:1;font-size:14px;color:var(--white)">${t.nome}</span>
       <span style="font-size:12px;color:var(--gold);font-weight:700">${t.participantes} resp.</span>
     </label>
   `).join("");
